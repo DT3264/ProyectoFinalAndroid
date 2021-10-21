@@ -20,7 +20,7 @@ import androidx.navigation.NavController
 import com.dcerna.proyectofinal.R
 
 @Composable
-fun RecordatoiriosScreen(navController: NavController, noteID: String){
+fun RecordatoiriosScreen(noteID: String){
     Surface(color = MaterialTheme.colors.background) {
         RecordatoriosDetails(noteID)
     }

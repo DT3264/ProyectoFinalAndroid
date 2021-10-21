@@ -17,7 +17,7 @@ import androidx.navigation.NavController
 import com.dcerna.proyectofinal.R
 
 @Composable
-fun MultimediaScreen(navController: NavController, noteID: String){
+fun MultimediaScreen(noteID: String){
     Surface(color = MaterialTheme.colors.background) {
         MultimediaDetails(noteID)
     }

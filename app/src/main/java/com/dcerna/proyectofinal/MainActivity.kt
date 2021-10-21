@@ -47,7 +47,6 @@ fun ComposeNotesApp() {
             arguments = listOf(navArgument("noteID") { type = NavType.StringType })
         ) {
             MultimediaScreen(
-                navController,
                 noteID = it.arguments?.getString("noteID")!!,
             )
         }
@@ -56,7 +55,6 @@ fun ComposeNotesApp() {
             arguments = listOf(navArgument("noteID") { type = NavType.StringType })
         ) {
             RecordatoiriosScreen(
-                navController,
                 noteID = it.arguments?.getString("noteID")!!,
             )
         }
