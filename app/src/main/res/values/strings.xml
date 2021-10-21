@@ -1,3 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ProyectoFinal</string>
+    <string name="app_name">Final project</string>
+    <string name="ID_NOTE">Note ID</string>
+    <string name="MULTIMEDIA">Multimedia</string>
+    <string name="NOTE_DETAILS">Note details</string>
+    <string name="TO_REMINDER">To reminders</string>
+    <string name="TO_MULTIMEDIA">To multimedia</string>
+    <string name="REMINDERS">Reminders</string>
 </resources>

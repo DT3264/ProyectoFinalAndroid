@@ -13,10 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.dcerna.proyectofinal.R
 
 @Composable
 fun NoteDetailsScreen(navController: NavController, noteID: String){
@@ -28,7 +30,8 @@ fun NoteDetailsScreen(navController: NavController, noteID: String){
 @Composable
 fun NoteDetails(noteID: String, navController: NavController) {
     Column{
-        Text("ID nota: $noteID. Detalles Nota")
+        Text(text = "${stringResource(R.string.ID_NOTE)}: $noteID")
+        Text(stringResource(R.string.NOTE_DETAILS))
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -38,7 +41,7 @@ fun NoteDetails(noteID: String, navController: NavController) {
                 },
             elevation = 10.dp
         ) {
-            Text("A multimedia", style = TextStyle(fontSize = 30.sp))
+            Text(stringResource(R.string.TO_MULTIMEDIA), style = TextStyle(fontSize = 30.sp))
         }
         Card(
             modifier = Modifier
@@ -49,7 +52,7 @@ fun NoteDetails(noteID: String, navController: NavController) {
                 },
             elevation = 10.dp
         ) {
-            Text("A recordatorios", style = TextStyle(fontSize = 30.sp))
+            Text(stringResource(R.string.TO_REMINDER), style = TextStyle(fontSize = 30.sp))
         }
     }
 }
