@@ -33,11 +33,6 @@ fun NoteDetailsScreen(navController: NavController, noteID: String){
 
 @Composable
 fun NoteDetails(noteID: String, navController: NavController) {
-    var context = LocalContext.current
-    var db = NotasBD.getInstance(context)
-    var recordatorios = db.DAONotas().getRecordatoriosPorIDNota(noteID)
-    var multimedia = db.DAONotas().getMultimediasPorIDNota(noteID)
-
     Column{
         Text(text = "${stringResource(R.string.ID_NOTE)}: $noteID")
         Text(stringResource(R.string.NOTE_DETAILS))
@@ -62,16 +57,6 @@ fun NoteDetails(noteID: String, navController: NavController) {
             elevation = 10.dp
         ) {
             Text(stringResource(R.string.TO_REMINDER), style = TextStyle(fontSize = 30.sp))
-        }
-        LazyColumn() {
-            items(recordatorios) {
-                Text("Recordatorio: ${it.idNota},${it.idRecordatorio},${it.fechaRecordatorio}")
-            }
-        }
-        LazyColumn() {
-            items(multimedia) {
-                Text("Multimedia: ${it.idNota},${it.idMultimedia},${it.descripcion},${it.ruta},${it.tipo}")
-            }
         }
     }
 }
