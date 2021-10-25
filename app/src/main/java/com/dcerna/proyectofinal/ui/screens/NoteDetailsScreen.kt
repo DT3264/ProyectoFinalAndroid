@@ -28,6 +28,7 @@ import com.dcerna.proyectofinal.data.NotasBD
 fun NoteDetailsScreen(navController: NavController, noteID: String){
     Surface(color = MaterialTheme.colors.background) {
         NoteDetails(noteID, navController)
+        //    EjemploDialogos()
     }
 }
 
@@ -36,25 +37,18 @@ fun NoteDetails(noteID: String, navController: NavController) {
     Column{
         Text(text = "${stringResource(R.string.ID_NOTE)}: $noteID")
         Text(stringResource(R.string.NOTE_DETAILS))
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp)
-                .clickable{
-                    navController.navigate(route = "multimedia/$noteID")
-                },
-            elevation = 10.dp
+        Button(
+            onClick = {
+                navController.navigate(route = "multimedia/$noteID")
+            }
         ) {
             Text(stringResource(R.string.TO_MULTIMEDIA), style = TextStyle(fontSize = 30.sp))
         }
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp)
-                .clickable{
-                    navController.navigate(route = "recordatorios/$noteID")
-                },
-            elevation = 10.dp
+        Spacer(modifier = Modifier.padding(all = 16.dp))
+        Button(
+            onClick = {
+                navController.navigate(route = "recordatorios/$noteID")
+            }
         ) {
             Text(stringResource(R.string.TO_REMINDER), style = TextStyle(fontSize = 30.sp))
         }

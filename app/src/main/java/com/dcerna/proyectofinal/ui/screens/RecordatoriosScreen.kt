@@ -23,6 +23,7 @@ import com.dcerna.proyectofinal.R
 fun RecordatoiriosScreen(noteID: String){
     Surface(color = MaterialTheme.colors.background) {
         RecordatoriosDetails(noteID)
+        //    EjemploDialogos()
     }
 }
 
