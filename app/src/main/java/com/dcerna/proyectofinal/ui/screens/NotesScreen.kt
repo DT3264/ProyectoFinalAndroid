@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,10 +37,22 @@ import java.util.*
 @ExperimentalComposeUiApi
 @Composable
 fun NotesScreen(navController: NavController) {
+
     val context = LocalContext.current
     val db = NotasBD.getInstance(context)
-    val notas = remember { mutableStateOf(db.DAONotas().getNotas()) }
-    val notasInicial = db.DAONotas().getNotas()
+
+    val comparadorNotas = Comparator { n1: Nota, n2: Nota ->
+        var toReturn = 0
+        if (n1.esTarea && n2.esTarea) if (n1.fechaLimite < n2.fechaLimite) toReturn =
+            1 else toReturn = -1
+        else if (!n1.esTarea && !n2.esTarea) if (n1.fechaCreacion < n2.fechaCreacion) toReturn =
+            1 else toReturn = -1
+        else if (!n1.esTarea) toReturn = 1 else toReturn = -1
+        toReturn
+    }
+
+    val notasInicial = db.DAONotas().getNotas().sortedWith(comparadorNotas)
+    val notas = remember { mutableStateOf(notasInicial) }
 
     val dialogAgregar = remember { mutableStateOf(false) }
     val textState = remember { mutableStateOf(TextFieldValue("")) }
@@ -55,15 +68,11 @@ fun NotesScreen(navController: NavController) {
         },
     ) {
 
-        Column() {
+        Column {
             SearchView(textState, notas, notasInicial)
             LazyColumn() {
                 items(notas.value) {
-                    GetNota(
-                        it.idNota.toString(),
-                        "${it.idNota},${it.titulo},${it.descripcion}",
-                        navController,
-                    )
+                    GetNota(it, navController, context)
                 }
             }
         }
@@ -130,20 +139,6 @@ fun SearchView(
     )
 }
 
-@Composable
-fun GetNota(noteID: String, text: String, navController: NavController) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(15.dp)
-            .clickable {
-                navController.navigate(route = "noteDetails/$noteID")
-            },
-        elevation = 10.dp
-    ) {
-        Text(text, style = TextStyle(fontSize = 30.sp))
-    }
-}
 
 @Composable
 fun MuestraDialogAgregar(dialogState: MutableState<Boolean>, navController: NavController) {
@@ -190,6 +185,58 @@ fun MuestraDialogAgregar(dialogState: MutableState<Boolean>, navController: NavC
             }
         }
     )
+}
+
+@Composable
+fun GetNota(
+    nota: Nota,
+    navController: NavController,
+    context: Context
+) {
+    val estaCompletada = remember { mutableStateOf(nota.estaCompletada) }
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(15.dp)
+            .clickable {
+                navController.navigate(route = "noteDetails/${nota.idNota}")
+            },
+        elevation = 10.dp
+    ) {
+        Column() {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (nota.esTarea) {
+                    Checkbox(
+                        modifier = Modifier.padding(start = 15.dp, end = 15.dp),
+                        checked = estaCompletada.value,
+                        onCheckedChange = {
+                            actualizaNota(nota, it, context)
+                            estaCompletada.value = it
+                        })
+                }
+                Text(
+                    "${nota.idNota},${nota.titulo}",
+                    modifier = Modifier.padding(
+                        start = if (!nota.esTarea) 15.dp else 0.dp,
+                        end = if (!nota.esTarea) 15.dp else 0.dp
+                    ),
+                    style = TextStyle(fontSize = 30.sp),
+                )
+            }
+            if (nota.descripcion.isNotBlank())
+                Text(
+                    "${nota.descripcion.subSequence(0, minOf(10, nota.descripcion.length))}",
+                    modifier = Modifier.padding(start = 15.dp, end = 15.dp),
+                    style = TextStyle(fontSize = 30.sp),
+                )
+        }
+    }
+}
+
+fun actualizaNota(nota: Nota, estado: Boolean, context: Context) {
+    val db = NotasBD.getInstance(context)
+    nota.estaCompletada = estado
+    db.DAONotas().update(nota)
 }
 
 fun insertaNota(context: Context, esTarea: Boolean = false): Long {
