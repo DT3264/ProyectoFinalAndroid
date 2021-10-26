@@ -34,23 +34,25 @@ fun NoteDetailsScreen(navController: NavController, noteID: String){
 
 @Composable
 fun NoteDetails(noteID: String, navController: NavController) {
-    Column{
-        Text(text = "${stringResource(R.string.ID_NOTE)}: $noteID")
-        Text(stringResource(R.string.NOTE_DETAILS))
-        Button(
-            onClick = {
-                navController.navigate(route = "multimedia/$noteID")
+    Scaffold{
+        Column{
+            Text(text = "${stringResource(R.string.ID_NOTE)}: $noteID")
+            Text(stringResource(R.string.NOTE_DETAILS))
+            Button(
+                onClick = {
+                    navController.navigate(route = "multimedia/$noteID")
+                }
+            ) {
+                Text(stringResource(R.string.TO_MULTIMEDIA), style = TextStyle(fontSize = 30.sp))
             }
-        ) {
-            Text(stringResource(R.string.TO_MULTIMEDIA), style = TextStyle(fontSize = 30.sp))
-        }
-        Spacer(modifier = Modifier.padding(all = 16.dp))
-        Button(
-            onClick = {
-                navController.navigate(route = "recordatorios/$noteID")
+            Spacer(modifier = Modifier.padding(all = 16.dp))
+            Button(
+                onClick = {
+                    navController.navigate(route = "recordatorios/$noteID")
+                }
+            ) {
+                Text(stringResource(R.string.TO_REMINDER), style = TextStyle(fontSize = 30.sp))
             }
-        ) {
-            Text(stringResource(R.string.TO_REMINDER), style = TextStyle(fontSize = 30.sp))
         }
     }
 }
