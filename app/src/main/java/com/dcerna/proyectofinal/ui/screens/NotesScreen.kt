@@ -5,69 +5,140 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.dcerna.proyectofinal.data.Multimedia
 import com.dcerna.proyectofinal.data.Nota
 import com.dcerna.proyectofinal.data.NotasBD
-import com.dcerna.proyectofinal.data.Recordatorio
 import java.util.*
 
+@ExperimentalComposeUiApi
 @Composable
 fun NotesScreen(navController: NavController) {
+
     val context = LocalContext.current
     val db = NotasBD.getInstance(context)
-    var notas = db.DAONotas().getNotas()
+
+    val comparadorNotas = Comparator { n1: Nota, n2: Nota ->
+        var toReturn = 0
+        if (n1.esTarea && n2.esTarea) if (n1.fechaLimite < n2.fechaLimite) toReturn =
+            1 else toReturn = -1
+        else if (!n1.esTarea && !n2.esTarea) if (n1.fechaCreacion < n2.fechaCreacion) toReturn =
+            1 else toReturn = -1
+        else if (!n1.esTarea) toReturn = 1 else toReturn = -1
+        toReturn
+    }
+
+    val notasInicial = db.DAONotas().getNotas().sortedWith(comparadorNotas)
+    val notas = remember { mutableStateOf(notasInicial) }
 
     val dialogAgregar = remember { mutableStateOf(false) }
+    val textState = remember { mutableStateOf(TextFieldValue("")) }
 
     if (dialogAgregar.value) {
         MuestraDialogAgregar(dialogAgregar, navController)
     }
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { dialogAgregar.value = true}) {
+            FloatingActionButton(onClick = { dialogAgregar.value = true }) {
                 Icon(Icons.Filled.Add, null)
             }
-        }
+        },
     ) {
-        LazyColumn(modifier = Modifier.fillMaxHeight()) {
-            items(notas) {
-                GetNota(
-                    it.idNota.toString(),
-                    "${it.idNota},${it.titulo},${it.descripcion}",
-                    navController,
-                )
+
+        Column {
+            SearchView(textState, notas, notasInicial)
+            LazyColumn() {
+                items(notas.value) {
+                    GetNota(it, navController, context)
+                }
             }
         }
     }
 }
 
+@ExperimentalComposeUiApi
 @Composable
-fun GetNota(noteID: String, text: String, navController: NavController) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(15.dp)
-            .clickable {
-                navController.navigate(route = "noteDetails/$noteID")
-            },
-        elevation = 10.dp
-    ) {
-        Text(text, style = TextStyle(fontSize = 30.sp))
-    }
+fun SearchView(
+    state: MutableState<TextFieldValue>,
+    notas: MutableState<List<Nota>>,
+    notasInicial: List<Nota>,
+) {
+    val focusManager = LocalFocusManager.current
+    TextField(
+        value = state.value,
+        onValueChange = { value ->
+            state.value = value
+            if (value.text != "") {
+                notas.value =
+                    notasInicial.filter {
+                        it.titulo.contains(value.text) || it.nota.contains(value.text)
+                    }
+            } else {
+                notas.value = notasInicial
+            }
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done,
+        ),
+        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+        modifier = Modifier.fillMaxWidth(),
+        textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
+        leadingIcon = {
+            Icon(
+                Icons.Default.Search,
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(15.dp)
+                    .size(24.dp)
+            )
+        },
+        trailingIcon = {
+            if (state.value != TextFieldValue("")) {
+                IconButton(
+                    onClick = {
+                        state.value = TextFieldValue("")
+                        notas.value = notasInicial
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .size(24.dp)
+                    )
+                }
+            }
+        },
+        singleLine = true,
+        shape = RectangleShape,
+    )
 }
+
 
 @Composable
 fun MuestraDialogAgregar(dialogState: MutableState<Boolean>, navController: NavController) {
@@ -114,6 +185,58 @@ fun MuestraDialogAgregar(dialogState: MutableState<Boolean>, navController: NavC
             }
         }
     )
+}
+
+@Composable
+fun GetNota(
+    nota: Nota,
+    navController: NavController,
+    context: Context
+) {
+    val estaCompletada = remember { mutableStateOf(nota.estaCompletada) }
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(15.dp)
+            .clickable {
+                navController.navigate(route = "noteDetails/${nota.idNota}")
+            },
+        elevation = 10.dp
+    ) {
+        Column() {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (nota.esTarea) {
+                    Checkbox(
+                        modifier = Modifier.padding(start = 15.dp, end = 15.dp),
+                        checked = estaCompletada.value,
+                        onCheckedChange = {
+                            actualizaNota(nota, it, context)
+                            estaCompletada.value = it
+                        })
+                }
+                Text(
+                    "${nota.idNota},${nota.titulo}",
+                    modifier = Modifier.padding(
+                        start = if (!nota.esTarea) 15.dp else 0.dp,
+                        end = if (!nota.esTarea) 15.dp else 0.dp
+                    ),
+                    style = TextStyle(fontSize = 30.sp),
+                )
+            }
+            if (nota.descripcion.isNotBlank())
+                Text(
+                    "${nota.descripcion.subSequence(0, minOf(10, nota.descripcion.length))}",
+                    modifier = Modifier.padding(start = 15.dp, end = 15.dp),
+                    style = TextStyle(fontSize = 30.sp),
+                )
+        }
+    }
+}
+
+fun actualizaNota(nota: Nota, estado: Boolean, context: Context) {
+    val db = NotasBD.getInstance(context)
+    nota.estaCompletada = estado
+    db.DAONotas().update(nota)
 }
 
 fun insertaNota(context: Context, esTarea: Boolean = false): Long {

@@ -18,8 +18,10 @@ import com.dcerna.proyectofinal.R
 
 @Composable
 fun MultimediaScreen(noteID: String){
-    Surface(color = MaterialTheme.colors.background) {
-        MultimediaDetails(noteID)
+    Scaffold() {
+        Surface(color = MaterialTheme.colors.background) {
+            MultimediaDetails(noteID)
+        }
     }
 }
 
