@@ -13,4 +13,5 @@ data class Recordatorio(
     @ColumnInfo(index = true)
     var idNota: Long = 0L,
     var fechaRecordatorio: Long,
+
 )
