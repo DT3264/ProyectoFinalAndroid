@@ -11,7 +11,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -34,7 +37,40 @@ fun NoteDetailsScreen(navController: NavController, noteID: String){
 
 @Composable
 fun NoteDetails(noteID: String, navController: NavController) {
-    Scaffold{
+    val showMenu = remember { mutableStateOf(false) }
+    val dialogAgregar = remember { mutableStateOf(false) }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                elevation = 4.dp,
+                title = {
+                    Text(stringResource(R.string.NOTE_DETAILS))
+                },
+                backgroundColor = MaterialTheme.colors.primarySurface,
+                actions = {
+                    IconButton(onClick = { showMenu.value = !showMenu.value }) {
+                        Icon(Icons.Filled.MoreVert, null)
+                    }
+                    DropdownMenu(expanded = showMenu.value ,
+                        onDismissRequest = { showMenu.value = false }
+                    ) {
+                        DropdownMenuItem(onClick = {
+                            navController.navigate(route = "multimedia/$noteID")
+                        }) {
+                            Text("Multimedia")
+                        }
+                        DropdownMenuItem(onClick = {
+                            navController.navigate(route = "recordatorios/$noteID")
+                        }) {
+                            Text("Recordatorios")
+                        }
+                        DropdownMenuItem(onClick = { dialogAgregar.value = true }) {
+                            Text("Borrar")
+                        }
+                    }
+                })
+        }
+    ){
         Column{
             Text(text = "${stringResource(R.string.ID_NOTE)}: $noteID")
             Text(stringResource(R.string.NOTE_DETAILS))
@@ -46,6 +82,13 @@ fun NoteDetails(noteID: String, navController: NavController) {
                 Text(stringResource(R.string.TO_MULTIMEDIA), style = TextStyle(fontSize = 30.sp))
             }
             Spacer(modifier = Modifier.padding(all = 16.dp))
+            Button(
+                onClick = {
+                    navController.navigate(route = "recordatorios/$noteID")
+                }
+            ) {
+                Text(stringResource(R.string.TO_REMINDER), style = TextStyle(fontSize = 30.sp))
+            }
             Button(
                 onClick = {
                     navController.navigate(route = "recordatorios/$noteID")
