@@ -35,6 +35,9 @@ interface DAONotas {
     @Query("SELECT * FROM notas")
     fun getLiveNotas(): LiveData<List<Nota>>
 
+    @Query("SELECT * FROM notas WHERE idNota = :id")
+    fun getNota(id:String): Nota
+
     @Query("SELECT * FROM notas")
     fun getNotas(): List<Nota>
 
