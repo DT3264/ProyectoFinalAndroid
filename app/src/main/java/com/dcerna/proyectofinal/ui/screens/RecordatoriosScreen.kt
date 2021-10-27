@@ -45,10 +45,6 @@ fun RecordatoiriosScreen(noteID: String){
     val datePickerDialog = getDatePickerDialogRecordatorio(context, noteID )
     val dialogEliminar = remember { mutableStateOf(false) }
 
-
-    Surface(color = MaterialTheme.colors.background) {
-    }
-
     if (dialogEliminar.value) {
        MuestraDialogEliminarRecordatorio(dialogEliminar)
     }
