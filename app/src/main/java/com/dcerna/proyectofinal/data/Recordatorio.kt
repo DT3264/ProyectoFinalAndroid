@@ -14,4 +14,6 @@ data class Recordatorio(
     var idNota: Long = 0L,
     var fechaRecordatorio: Long,
 
+
+
 )
