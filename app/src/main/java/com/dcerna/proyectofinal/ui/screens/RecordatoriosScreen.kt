@@ -3,16 +3,14 @@ package com.dcerna.proyectofinal.ui.screens
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.text.format.DateFormat.format
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -25,34 +23,35 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.dcerna.proyectofinal.Fecha
 import com.dcerna.proyectofinal.Hora
 import com.dcerna.proyectofinal.R
-import com.dcerna.proyectofinal.data.DAONotas
-import com.dcerna.proyectofinal.data.Nota
 import com.dcerna.proyectofinal.data.NotasBD
 import com.dcerna.proyectofinal.data.Recordatorio
+import java.lang.String.format
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 
 @Composable
 fun RecordatoiriosScreen(noteID: String){
-    val context = LocalContext.current
     val showMenu = remember { mutableStateOf(false) }
+    val dialogEliminar = remember { mutableStateOf(false) }
+    val recordatorioEliminar = remember{ mutableStateOf(Recordatorio(0,0,0))}
+
+    val context = LocalContext.current
     val db = NotasBD.getInstance(context)
     val recordatorios = db.DAONotas().getRecordatoriosPorIDNota(noteID)
     val datePickerDialog = getDatePickerDialogRecordatorio(context, noteID )
-    val dialogEliminar = remember { mutableStateOf(false) }
 
 
     Surface(color = MaterialTheme.colors.background) {
     }
 
     if (dialogEliminar.value) {
-       MuestraDialogEliminarRecordatorio(dialogEliminar)
+       muestraDialogEliminarRecordatorio(dialogEliminar, context, recordatorioEliminar)
     }
-
 
     Scaffold(
         topBar = {
@@ -97,14 +96,13 @@ fun RecordatoiriosScreen(noteID: String){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-
         }
         Column{
             Text(text = "${stringResource(R.string.ID_NOTE)}: $noteID")
             Text(stringResource(R.string.REMINDERS))
             LazyColumn(modifier = Modifier.fillMaxHeight()) {
                 items(recordatorios) {recordatorio ->
-                    mostrarRecordatorio(context,recordatorio, dialogEliminar)
+                    mostrarRecordatorio(recordatorio, dialogEliminar, recordatorioEliminar)
                 }
             }
 
@@ -114,20 +112,31 @@ fun RecordatoiriosScreen(noteID: String){
 
 }
 @Composable
-fun mostrarRecordatorio(context: Context,recordatorio: Recordatorio, dialogEliminar: MutableState<Boolean>){
+fun mostrarRecordatorio(recordatorio: Recordatorio, dialogEliminar: MutableState<Boolean>, recordatorioEliminar: MutableState<Recordatorio>){
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(15.dp)
             .clickable {
                 dialogEliminar.value = true
-               // MuestraDialogEliminarRecordatorio(dialogoEliminar, recordatorio)
+                recordatorioEliminar.value = recordatorio
             }
         ,
         elevation = 10.dp
     ) {
-        Text(text = "ID: " + recordatorio.idRecordatorio.toString()+ " Fecha: "+ recordatorio.fechaRecordatorio, style = TextStyle(fontSize = 30.sp))
+        Text(text = "ID: " + recordatorio.idRecordatorio.toString()+ "   Fecha: "+ getDate(recordatorio.fechaRecordatorio, "dd/MM/yyyy hh:mm"), style = TextStyle(fontSize = 20.sp))
     }
+}
+
+
+fun getDate(milliSeconds: Long, dateFormat: String?): String? {
+    // Create a DateFormatter object for displaying date in specified format.
+    val formatter = SimpleDateFormat(dateFormat)
+
+    // Create a calendar object that will convert the date and time value in milliseconds to date.
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = milliSeconds
+    return formatter.format(calendar.time)
 }
 
 
@@ -185,6 +194,7 @@ fun getTimePickerDialogRecordatorio(
             val db = NotasBD.getInstance(context)
              val recordatorio= Recordatorio(idNota=noteID.toLong(), fechaRecordatorio=fechaYHoraSeleccionada.timeInMillis.toLong())
             db.DAONotas().save(recordatorio)
+            
 
         },
         horaActual, minutoActual, false
@@ -192,7 +202,7 @@ fun getTimePickerDialogRecordatorio(
 }
 
 @Composable
-fun MuestraDialogEliminarRecordatorio(dialogState: MutableState<Boolean>) {
+fun muestraDialogEliminarRecordatorio(dialogState: MutableState<Boolean>, context: Context, recordatorioEliminar: MutableState<Recordatorio>) {
     val context = LocalContext.current
     AlertDialog(
         onDismissRequest = {
@@ -202,8 +212,10 @@ fun MuestraDialogEliminarRecordatorio(dialogState: MutableState<Boolean>) {
             Text(text = "Eliminar")
         },
         text = {
+
             Column {
-                Text("¿Seguro que deseas eliminar?")
+                val recordatorio=recordatorioEliminar.value
+                Text("¿Seguro que deseas eliminar el recordatorio "+recordatorio.idRecordatorio+"?")
             }
         },
         buttons = {
@@ -214,8 +226,8 @@ fun MuestraDialogEliminarRecordatorio(dialogState: MutableState<Boolean>) {
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        //val eliminar = eliminarRecordatorio(context,recordatorio)
-
+                        val eliminar = eliminarRecordatorio(context, recordatorioEliminar)
+                        dialogState.value = false
                     }
                 ) {
                     Text("Eliminar")
@@ -235,7 +247,8 @@ fun MuestraDialogEliminarRecordatorio(dialogState: MutableState<Boolean>) {
     )
 }
 
-fun eliminarRecordatorio(context: Context, recordatorio: Recordatorio){
+fun eliminarRecordatorio(context: Context, recordatorioEliminar: MutableState<Recordatorio>){
+    val recordatorio=recordatorioEliminar.value
     val db = NotasBD.getInstance(context)
     db.DAONotas().delete(recordatorio)
 
