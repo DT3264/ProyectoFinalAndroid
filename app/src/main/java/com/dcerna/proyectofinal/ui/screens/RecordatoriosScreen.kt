@@ -45,10 +45,6 @@ fun RecordatoiriosScreen(noteID: String){
     val recordatorios = db.DAONotas().getRecordatoriosPorIDNota(noteID)
     val datePickerDialog = getDatePickerDialogRecordatorio(context, noteID )
 
-
-    Surface(color = MaterialTheme.colors.background) {
-    }
-
     if (dialogEliminar.value) {
        muestraDialogEliminarRecordatorio(dialogEliminar, context, recordatorioEliminar)
     }
