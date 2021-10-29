@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,7 +43,7 @@ fun RecordatoiriosScreen(noteID: String){
 
     val context = LocalContext.current
     val db = NotasBD.getInstance(context)
-    val recordatorios = db.DAONotas().getRecordatoriosPorIDNota(noteID)
+    val recordatorios = db.DAONotas().getLiveRecordatoriosPorIDNota(noteID).observeAsState()
     val datePickerDialog = getDatePickerDialogRecordatorio(context, noteID )
 
     if (dialogEliminar.value) {
@@ -96,10 +97,8 @@ fun RecordatoiriosScreen(noteID: String){
         Column{
             Text(text = "${stringResource(R.string.ID_NOTE)}: $noteID")
             Text(stringResource(R.string.REMINDERS))
-            LazyColumn(modifier = Modifier.fillMaxHeight()) {
-                items(recordatorios) {recordatorio ->
-                    mostrarRecordatorio(recordatorio, dialogEliminar, recordatorioEliminar)
-                }
+            Column(modifier = Modifier.fillMaxHeight()) {
+                recordatorios.value?.forEach { r -> mostrarRecordatorio(r, dialogEliminar, recordatorioEliminar) }
             }
 
         }
@@ -120,16 +119,14 @@ fun mostrarRecordatorio(recordatorio: Recordatorio, dialogEliminar: MutableState
         ,
         elevation = 10.dp
     ) {
-        Text(text = "ID: " + recordatorio.idRecordatorio.toString()+ "   Fecha: "+ getDate(recordatorio.fechaRecordatorio, "dd/MM/yyyy hh:mm"), style = TextStyle(fontSize = 20.sp))
+        Text(text = "Fecha: "+ getDate(recordatorio.fechaRecordatorio, "dd/MM/yyyy hh:mm a"), style = TextStyle(fontSize = 20.sp))
     }
 }
 
 
 fun getDate(milliSeconds: Long, dateFormat: String?): String? {
-    // Create a DateFormatter object for displaying date in specified format.
     val formatter = SimpleDateFormat(dateFormat)
 
-    // Create a calendar object that will convert the date and time value in milliseconds to date.
     val calendar = Calendar.getInstance()
     calendar.timeInMillis = milliSeconds
     return formatter.format(calendar.time)
@@ -211,7 +208,7 @@ fun muestraDialogEliminarRecordatorio(dialogState: MutableState<Boolean>, contex
 
             Column {
                 val recordatorio=recordatorioEliminar.value
-                Text("¿Seguro que deseas eliminar el recordatorio "+recordatorio.idRecordatorio+"?")
+                Text("¿Seguro que deseas eliminar el recordatorio con fecha "+recordatorio.fechaRecordatorio+"?")
             }
         },
         buttons = {
