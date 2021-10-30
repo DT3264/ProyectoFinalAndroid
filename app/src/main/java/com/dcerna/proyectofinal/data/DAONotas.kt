@@ -35,8 +35,20 @@ interface DAONotas {
     @Query("SELECT * FROM notas")
     fun getLiveNotas(): LiveData<List<Nota>>
 
+    @Query("SELECT * FROM notas WHERE idNota = :id")
+    fun getNota(id:String): Nota
+
+    @Query("SELECT * FROM notas WHERE idNota = :id")
+    fun getLiveNota(id:String): LiveData<Nota>
+
     @Query("SELECT * FROM notas")
     fun getNotas(): List<Nota>
+
+    @Query("DELETE FROM multimedias WHERE idNota=:id")
+    fun deleteAllMultimedio(id: String)
+
+    @Query("DELETE FROM recordatorios WHERE idNota=:id")
+    fun deleteAllRecordatorios(id: String)
 
     @Query("SELECT * FROM recordatorios WHERE idNota = :id")
     fun getLiveRecordatoriosPorIDNota(id: String): LiveData<List<Recordatorio>>
