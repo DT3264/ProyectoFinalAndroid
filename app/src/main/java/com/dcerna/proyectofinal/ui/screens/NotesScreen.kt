@@ -3,8 +3,6 @@ package com.dcerna.proyectofinal.ui.screens
 import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -14,8 +12,10 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -45,6 +45,10 @@ fun NotesScreen(navController: NavController) {
     val context = LocalContext.current
     val db = NotasBD.getInstance(context)
 
+    val dialogAgregar = remember { mutableStateOf(false) }
+    val query = rememberSaveable { mutableStateOf("")}
+    val notasActual = db.DAONotas().getLiveNotas().observeAsState()
+
     val comparadorNotas = Comparator { n1: Nota, n2: Nota ->
         var toReturn = 0
         if (n1.esTarea && n2.esTarea) if (n1.fechaLimite < n2.fechaLimite) toReturn =
@@ -55,11 +59,16 @@ fun NotesScreen(navController: NavController) {
         toReturn
     }
 
-    val notasInicial = db.DAONotas().getNotas().sortedWith(comparadorNotas)
-    val notas = remember { mutableStateOf(notasInicial) }
+    var notas: List<Nota>? = notasActual.value?.sortedWith(comparadorNotas)
+    if(query.value!=""){
+        notas = notas?.filter {
+            it.titulo.lowercase(Locale.getDefault())
+                .contains(query.value.lowercase(Locale.getDefault()))
+                    || it.nota.lowercase(Locale.getDefault())
+                .contains(query.value.lowercase(Locale.getDefault()))
+        }
+    }
 
-    val dialogAgregar = remember { mutableStateOf(false) }
-    val textState = remember { mutableStateOf(TextFieldValue("")) }
 
     if (dialogAgregar.value) {
         MuestraDialogAgregar(dialogAgregar, navController)
@@ -82,39 +91,25 @@ fun NotesScreen(navController: NavController) {
     ) {
 
         Column {
-            SearchView(textState, notas, notasInicial)
-            LazyColumn() {
-                items(notas.value) {
-                    GetNota(it, navController, context)
-                }
+            SearchView(query)
+            Column() {
+                notas?.forEach { n -> GetNota(n, navController, context) }
             }
         }
     }
 }
 
+
 @ExperimentalComposeUiApi
 @Composable
 fun SearchView(
-    state: MutableState<TextFieldValue>,
-    notas: MutableState<List<Nota>>,
-    notasInicial: List<Nota>,
+    query: MutableState<String>,
 ) {
     val focusManager = LocalFocusManager.current
     TextField(
-        value = state.value,
+        value = query.value,
         onValueChange = { value ->
-            state.value = value
-            if (value.text != "") {
-                notas.value =
-                    notasInicial.filter {
-                        it.titulo.lowercase(Locale.getDefault())
-                            .contains(value.text.lowercase(Locale.getDefault()))
-                                || it.nota.lowercase(Locale.getDefault())
-                            .contains(value.text.lowercase(Locale.getDefault()))
-                    }
-            } else {
-                notas.value = notasInicial
-            }
+            query.value = value
         },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
@@ -133,11 +128,10 @@ fun SearchView(
             )
         },
         trailingIcon = {
-            if (state.value != TextFieldValue("")) {
+            if (query.value != "") {
                 IconButton(
                     onClick = {
-                        state.value = TextFieldValue("")
-                        notas.value = notasInicial
+                        query.value = ""
                     }
                 ) {
                     Icon(
