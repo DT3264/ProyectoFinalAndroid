@@ -164,11 +164,11 @@ fun MuestraDialogAgregar(dialogState: MutableState<Boolean>, navController: NavC
             dialogState.value = false
         },
         title = {
-            Text(text = "Agregar")
+            Text(text = stringResource(R.string.ADD_NOTE))
         },
         text = {
             Column {
-                Text("¿Qué desea agregar?")
+                Text(stringResource(R.string.ADD_NOTE_QUESTION))
             }
         },
         buttons = {
@@ -185,7 +185,7 @@ fun MuestraDialogAgregar(dialogState: MutableState<Boolean>, navController: NavC
 
                     }
                 ) {
-                    Text("Nota")
+                    Text(stringResource(R.string.NOTE))
                 }
                 Spacer(modifier = Modifier.size(16.dp))
                 Button(
@@ -196,7 +196,7 @@ fun MuestraDialogAgregar(dialogState: MutableState<Boolean>, navController: NavC
                         navController.navigate(route = "noteDetails/$idNuevaNota")
                     }
                 ) {
-                    Text("Tarea")
+                    Text(stringResource(R.string.REMINDER))
                 }
             }
         }
@@ -223,7 +223,7 @@ fun GetNota(
         val fechaAUsar = if (nota.esTarea) nota.fechaLimite else nota.fechaCreacion
         val fecha = getDate(fechaAUsar, "dd/MM/yyyy")
         val hora = getDate(fechaAUsar, "hh:mm:ss")
-        val textoDeFecha = if(nota.esTarea) stringResource(R.string.REMINDER) else stringResource(R.string.NOTE)
+        val textoDeFecha = if(nota.esTarea) stringResource(R.string.TASK) else stringResource(R.string.NOTE)
         Column {
             Text(
                 "$textoDeFecha $fecha $hora",

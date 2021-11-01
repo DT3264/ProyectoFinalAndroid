@@ -69,7 +69,7 @@ fun NoteDetails(noteID: String, navController: NavController) {
                             showMenu.value = false
                             navController.navigate(route = "multimedia/$noteID")
                         }) {
-                            Text("Multimedia")
+                            Text(stringResource(R.string.MULTIMEDIA))
                         }
                         val nota = db.DAONotas().getNota(noteID)
                         if (nota != null) {
@@ -78,7 +78,7 @@ fun NoteDetails(noteID: String, navController: NavController) {
                                     showMenu.value = false
                                     navController.navigate(route = "recordatorios/$noteID")
                                 }) {
-                                    Text("Recordatorios")
+                                    Text(stringResource(id = R.string.REMINDERS))
                                 }
                             }
                         }
@@ -86,7 +86,7 @@ fun NoteDetails(noteID: String, navController: NavController) {
                             showMenu.value = false
                             dialogAgregar.value = true
                         }) {
-                            Text("Borrar")
+                            Text(stringResource(id = R.string.ERASE))
                         }
                     }
                 })
@@ -111,7 +111,7 @@ fun NoteDetails(noteID: String, navController: NavController) {
                                 buildAnnotatedString {
                                     withStyle(style = ParagraphStyle(lineHeight = 30.sp)) {
                                         withStyle(style = SpanStyle(color = Color.White)) {
-                                            append("Fecha: " + nota.value?.fechaLimite?.let {
+                                            append("${stringResource(id = R.string.DATE)}: " + nota.value?.fechaLimite?.let {
                                                 getDate(
                                                     it, "dd/MM/yyyy hh:mm a"
                                                 )
@@ -134,7 +134,7 @@ fun NoteDetails(noteID: String, navController: NavController) {
         Column(
             Modifier.padding(8.dp)
         ) {
-            Text(text = "Titulo: ")
+            Text(text = "${stringResource(R.string.TITLE)}: ")
             val nota = db.DAONotas().getNota(noteID)
             var titulo = ""
             var textNote = ""
@@ -149,7 +149,7 @@ fun NoteDetails(noteID: String, navController: NavController) {
                 value = textStateTitle.value,
                 onValueChange = { textStateTitle.value = it }
             )
-            Text(text = "Nota: ")
+            Text("${stringResource(R.string.NOTE)}: ")
             val textStateNota = remember { mutableStateOf(textNote) }
             TextField(
 
@@ -192,11 +192,11 @@ fun MuestraDialogEliminar(
             dialogState.value = false
         },
         title = {
-            Text(text = "Eliminar")
+            Text(stringResource(R.string.ERASE))
         },
         text = {
             Column {
-                Text("¿Desea eliminar la nota?")
+                Text(stringResource(R.string.ERASE_NOTE_QUESTION))
             }
         },
         buttons = {
@@ -211,7 +211,7 @@ fun MuestraDialogEliminar(
                         eliminarNota(context, noteid, navController)
                     }
                 ) {
-                    Text("Sí")
+                    Text(stringResource(R.string.YES))
                 }
                 Spacer(modifier = Modifier.size(16.dp))
                 Button(
@@ -220,7 +220,7 @@ fun MuestraDialogEliminar(
                         dialogState.value = false
                     }
                 ) {
-                    Text("No")
+                    Text(stringResource(R.string.NO))
                 }
             }
         }
@@ -273,14 +273,6 @@ fun getTimePickerDialogAdd(
                 fechaSeleccionada.dia,
                 horaSeleccionada.horas,
                 horaSeleccionada.minutos
-            )
-            println("Fecha seleccionada: ${fechaYHoraSeleccionada.timeInMillis.toLong()}")
-            println("Fecha seleccionada: ${fechaYHoraSeleccionada.timeInMillis}")
-            println(
-                "Fecha " + getDate(
-                    fechaYHoraSeleccionada.timeInMillis.toLong(),
-                    "dd/MM/yyyy hh:mm a"
-                )
             )
             val db = NotasBD.getInstance(context)
             val nota = db.DAONotas().getNota(noteID)

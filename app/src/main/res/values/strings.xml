@@ -6,9 +6,21 @@
     <string name="NOTE_DETAILS">Note details</string>
     <string name="TO_REMINDER">To reminders</string>
     <string name="TO_MULTIMEDIA">To multimedia</string>
-    <string name="REMINDERS">Reminders</string>
+    <string name="REMINDERS">Tasks</string>
     <string name="NOTE_FROM">Note from</string>
     <string name="NOTE">Note:</string>
-    <string name="REMINDER">Memo:</string>
+    <string name="REMINDER">Reminder</string>
     <string name="NOTES">Notes</string>
+    <string name="ERASE">Erase</string>
+    <string name="CANCEL">Cancel</string>
+    <string name="ERASE_REMINDER_QUESTION">Do you want to erase the reminder with date </string>
+    <string name="SELECTED_DATE">Selected date</string>
+    <string name="DATE">Date</string>
+    <string name="ADD_NOTE">Add</string>
+    <string name="ADD_NOTE_QUESTION">What you want to add?</string>
+    <string name="YES">Yes</string>
+    <string name="NO">No</string>
+    <string name="ERASE_NOTE_QUESTION">Do you want to erase the note?</string>
+    <string name="TITLE">Title</string>
+    <string name="TASK">Tarea</string>
 </resources>
