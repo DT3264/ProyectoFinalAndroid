@@ -7,4 +7,8 @@
     <string name="TO_REMINDER">A recordatorios</string>
     <string name="TO_MULTIMEDIA">A multimedia</string>
     <string name="REMINDERS">Recordatorios</string>
+    <string name="NOTE_FROM">Nota del</string>
+    <string name="NOTE">Nota:</string>
+    <string name="REMINDER">Memo:</string>
+    <string name="NOTES">Notas</string>
 </resources>

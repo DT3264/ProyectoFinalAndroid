@@ -1,4 +1,4 @@
-package com.dcerna.proyectofinal
+package com.dcerna.proyectofinal.util
 
 class Hora {
     var horas: Int = 0

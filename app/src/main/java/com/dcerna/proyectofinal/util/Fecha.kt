@@ -1,4 +1,4 @@
-package com.dcerna.proyectofinal
+package com.dcerna.proyectofinal.util
 
 class Fecha {
     var anio: Int = 0
