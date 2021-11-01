@@ -100,7 +100,7 @@ fun mostrarRecordatorio(recordatorio: Recordatorio, dialogEliminar: MutableState
         ,
         elevation = 10.dp
     ) {
-        Text(text = "Fecha: "+ getDate(recordatorio.fechaRecordatorio, "dd/MM/yyyy hh:mm a"), style = TextStyle(fontSize = 20.sp))
+        Text(text =  stringResource(R.string.DATE) + " " + getDate(recordatorio.fechaRecordatorio, "dd/MM/yyyy hh:mm a"), style = TextStyle(fontSize = 20.sp))
     }
 }
 
@@ -153,11 +153,9 @@ fun getTimePickerDialogRecordatorio(
                 horaSeleccionada.horas,
                 horaSeleccionada.minutos
             )
-            println("Fecha seleccionada: ${fechaYHoraSeleccionada.timeInMillis}")
-            println(noteID)
             // Aquí se hace lo que se requiera con la fecha/hora
             val db = NotasBD.getInstance(context)
-             val recordatorio= Recordatorio(idNota=noteID.toLong(), fechaRecordatorio=fechaYHoraSeleccionada.timeInMillis.toLong())
+            val recordatorio= Recordatorio(idNota=noteID.toLong(), fechaRecordatorio=fechaYHoraSeleccionada.timeInMillis.toLong())
             db.DAONotas().save(recordatorio)
             
 
@@ -174,13 +172,13 @@ fun muestraDialogEliminarRecordatorio(dialogState: MutableState<Boolean>, contex
             dialogState.value = false
         },
         title = {
-            Text(text = "Eliminar")
+            Text(stringResource(R.string.ERASE))
         },
         text = {
 
             Column {
                 val recordatorio=recordatorioEliminar.value
-                Text("¿Seguro que deseas eliminar el recordatorio con fecha "+recordatorio.fechaRecordatorio+"?")
+                Text(stringResource(R.string.ERASE_REMINDER_QUESTION)+ " "+ getDate(recordatorio.fechaRecordatorio, "dd/MM/yyyy hh:mm a")+"?")
             }
         },
         buttons = {
@@ -195,7 +193,7 @@ fun muestraDialogEliminarRecordatorio(dialogState: MutableState<Boolean>, contex
                         dialogState.value = false
                     }
                 ) {
-                    Text("Eliminar")
+                    Text(stringResource(R.string.ERASE))
                 }
                 Spacer(modifier = Modifier.size(16.dp))
                 Button(
@@ -205,7 +203,7 @@ fun muestraDialogEliminarRecordatorio(dialogState: MutableState<Boolean>, contex
 
                     }
                 ) {
-                    Text("Cancelar")
+                    Text(stringResource(R.string.CANCEL))
                 }
             }
         }

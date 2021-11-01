@@ -6,9 +6,21 @@
     <string name="NOTE_DETAILS">Detalles nota</string>
     <string name="TO_REMINDER">A recordatorios</string>
     <string name="TO_MULTIMEDIA">A multimedia</string>
-    <string name="REMINDERS">Recordatorios</string>
+    <string name="REMINDERS">Tareas</string>
     <string name="NOTE_FROM">Nota del</string>
-    <string name="NOTE">Nota:</string>
-    <string name="REMINDER">Memo:</string>
+    <string name="NOTE">Nota </string>
+    <string name="REMINDER">Recordatorio </string>
     <string name="NOTES">Notas</string>
+    <string name="ERASE">Borrar</string>
+    <string name="CANCEL">Cancelar</string>
+    <string name="ERASE_REMINDER_QUESTION">¿Seguro que deseas eliminar el recordatorio con fecha </string>
+    <string name="SELECTED_DATE">Fecha seleccionada</string>
+    <string name="DATE">Fecha</string>
+    <string name="ADD_NOTE">Agregar nota</string>
+    <string name="ADD_NOTE_QUESTION">¿Qué desea agregar?</string>
+    <string name="YES">Si</string>
+    <string name="NO">No</string>
+    <string name="ERASE_NOTE_QUESTION">¿Desea eliminar la nota?</string>
+    <string name="TITLE">Titulo</string>
+    <string name="TASK">Tarea</string>
 </resources>
