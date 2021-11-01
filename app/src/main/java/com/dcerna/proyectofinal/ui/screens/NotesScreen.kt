@@ -23,15 +23,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.dcerna.proyectofinal.R
 import com.dcerna.proyectofinal.data.Nota
 import com.dcerna.proyectofinal.data.NotasBD
+import com.dcerna.proyectofinal.util.getDate
 import java.util.*
 
 @ExperimentalComposeUiApi
@@ -44,7 +48,7 @@ fun NotesScreen(navController: NavController) {
     val comparadorNotas = Comparator { n1: Nota, n2: Nota ->
         var toReturn = 0
         if (n1.esTarea && n2.esTarea) if (n1.fechaLimite < n2.fechaLimite) toReturn =
-            1 else toReturn = -1
+            -1 else toReturn = 1
         else if (!n1.esTarea && !n2.esTarea) if (n1.fechaCreacion < n2.fechaCreacion) toReturn =
             1 else toReturn = -1
         else if (!n1.esTarea) toReturn = 1 else toReturn = -1
@@ -61,6 +65,15 @@ fun NotesScreen(navController: NavController) {
         MuestraDialogAgregar(dialogAgregar, navController)
     }
     Scaffold(
+        topBar = {
+            TopAppBar(
+                elevation = 4.dp,
+                title = {
+                    Text(stringResource(R.string.NOTES))
+                },
+                backgroundColor =  MaterialTheme.colors.primarySurface,
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { dialogAgregar.value = true }) {
                 Icon(Icons.Filled.Add, null)
@@ -94,7 +107,10 @@ fun SearchView(
             if (value.text != "") {
                 notas.value =
                     notasInicial.filter {
-                        it.titulo.contains(value.text) || it.nota.contains(value.text)
+                        it.titulo.lowercase(Locale.getDefault())
+                            .contains(value.text.lowercase(Locale.getDefault()))
+                                || it.nota.lowercase(Locale.getDefault())
+                            .contains(value.text.lowercase(Locale.getDefault()))
                     }
             } else {
                 notas.value = notasInicial
@@ -197,13 +213,23 @@ fun GetNota(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(15.dp)
+            .padding(10.dp)
             .clickable {
                 navController.navigate(route = "noteDetails/${nota.idNota}")
             },
         elevation = 10.dp
     ) {
-        Column() {
+        val fontSize = 24
+        val fechaAUsar = if (nota.esTarea) nota.fechaLimite else nota.fechaCreacion
+        val fecha = getDate(fechaAUsar, "dd/MM/yyyy")
+        val hora = getDate(fechaAUsar, "hh:mm:ss")
+        val textoDeFecha = if(nota.esTarea) stringResource(R.string.REMINDER) else stringResource(R.string.NOTE)
+        Column {
+            Text(
+                "$textoDeFecha $fecha $hora",
+                modifier = Modifier.padding(start = 15.dp, end = 15.dp),
+                style = TextStyle(fontSize = fontSize.sp),
+            )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (nota.esTarea) {
                     Checkbox(
@@ -214,20 +240,25 @@ fun GetNota(
                             estaCompletada.value = it
                         })
                 }
-                Text(
-                    "${nota.idNota},${nota.titulo}",
-                    modifier = Modifier.padding(
-                        start = if (!nota.esTarea) 15.dp else 0.dp,
-                        end = if (!nota.esTarea) 15.dp else 0.dp
-                    ),
-                    style = TextStyle(fontSize = 30.sp),
-                )
+                if (nota.titulo.isNotBlank())
+                    Text(
+                        nota.titulo,
+                        modifier = Modifier.padding(
+                            start = if (!nota.esTarea) 15.dp else 0.dp,
+                            end = if (!nota.esTarea) 15.dp else 0.dp
+                        ),
+                        style = TextStyle(fontSize = fontSize.sp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
             }
-            if (nota.descripcion.isNotBlank())
+            if (nota.nota.isNotBlank())
                 Text(
-                    "${nota.descripcion.subSequence(0, minOf(10, nota.descripcion.length))}",
+                    nota.nota,
                     modifier = Modifier.padding(start = 15.dp, end = 15.dp),
-                    style = TextStyle(fontSize = 30.sp),
+                    style = TextStyle(fontSize = fontSize.sp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
         }
     }

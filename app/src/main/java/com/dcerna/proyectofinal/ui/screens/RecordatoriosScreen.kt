@@ -24,11 +24,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dcerna.proyectofinal.Fecha
-import com.dcerna.proyectofinal.Hora
 import com.dcerna.proyectofinal.R
 import com.dcerna.proyectofinal.data.NotasBD
 import com.dcerna.proyectofinal.data.Recordatorio
+import com.dcerna.proyectofinal.util.Fecha
+import com.dcerna.proyectofinal.util.Hora
+import com.dcerna.proyectofinal.util.getDate
 import java.lang.String.format
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -55,30 +56,10 @@ fun RecordatoiriosScreen(noteID: String){
             TopAppBar(
                 elevation = 4.dp,
                 title = {
-                    Text("I'm a TopAppBar")
+                    Text(stringResource(R.string.REMINDERS))
                 },
                 backgroundColor =  MaterialTheme.colors.primarySurface,
-
-                actions = {
-                    IconButton(onClick = { showMenu.value = !showMenu.value }) {
-                        Icon(Icons.Filled.MoreVert, null)
-                    }
-                    DropdownMenu(
-                        expanded = showMenu.value,
-                        onDismissRequest = { showMenu.value = false }
-                    ) {
-                        DropdownMenuItem(onClick = { /*TODO*/ }) {
-                            Text("Multimedia")
-                        }
-                        DropdownMenuItem(onClick = { /*TODO*/ }) {
-                            Text("Recordatorios")
-                        }
-                        DropdownMenuItem(onClick = { /*TODO*/ }) {
-                            Text("Borrar")
-                        }
-
-                    }
-                })
+            )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { datePickerDialog.show()}) {
@@ -121,15 +102,6 @@ fun mostrarRecordatorio(recordatorio: Recordatorio, dialogEliminar: MutableState
     ) {
         Text(text = "Fecha: "+ getDate(recordatorio.fechaRecordatorio, "dd/MM/yyyy hh:mm a"), style = TextStyle(fontSize = 20.sp))
     }
-}
-
-
-fun getDate(milliSeconds: Long, dateFormat: String?): String? {
-    val formatter = SimpleDateFormat(dateFormat)
-
-    val calendar = Calendar.getInstance()
-    calendar.timeInMillis = milliSeconds
-    return formatter.format(calendar.time)
 }
 
 
@@ -244,6 +216,4 @@ fun eliminarRecordatorio(context: Context, recordatorioEliminar: MutableState<Re
     val recordatorio=recordatorioEliminar.value
     val db = NotasBD.getInstance(context)
     db.DAONotas().delete(recordatorio)
-
-
 }

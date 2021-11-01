@@ -7,4 +7,8 @@
     <string name="TO_REMINDER">To reminders</string>
     <string name="TO_MULTIMEDIA">To multimedia</string>
     <string name="REMINDERS">Reminders</string>
+    <string name="NOTE_FROM">Note from</string>
+    <string name="NOTE">Note:</string>
+    <string name="REMINDER">Memo:</string>
+    <string name="NOTES">Notes</string>
 </resources>
