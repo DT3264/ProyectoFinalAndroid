@@ -61,4 +61,7 @@ interface DAONotas {
 
     @Query("SELECT * FROM multimedias WHERE idNota = :id")
     fun getMultimediasPorIDNota(id: String): List<Multimedia>
+
+    @Query("SELECT * FROM multimedias WHERE idMultimedia = :id")
+    fun getMultimediaPorIDMultimedia(id: String): Multimedia
 }

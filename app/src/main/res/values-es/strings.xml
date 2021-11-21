@@ -23,4 +23,11 @@
     <string name="ERASE_NOTE_QUESTION">¿Desea eliminar la nota?</string>
     <string name="TITLE">Titulo</string>
     <string name="TASK">Tarea</string>
+    <string name="TAKE_PICTURE">Tomar foto</string>
+    <string name="PICTURE">Foto</string>
+    <string name="VIDEO">Video</string>
+    <string name="AUDIO">Audio</string>
+    <string name="FILE">Archivo</string>
+    <string name="ADD_MEDIA">Agregar multimedia</string>
+    <string name="ADD_MEDIA_QUESTION">¿Qué multimedia desea agregar?</string>
 </resources>

@@ -23,4 +23,11 @@
     <string name="ERASE_NOTE_QUESTION">Do you want to erase the note?</string>
     <string name="TITLE">Title</string>
     <string name="TASK">Tarea</string>
+    <string name="TAKE_PICTURE">Take Picture</string>
+    <string name="PICTURE">Picture</string>
+    <string name="VIDEO">Video</string>
+    <string name="AUDIO">Audio</string>
+    <string name="FILE">File</string>
+    <string name="ADD_MEDIA">Add media</string>
+    <string name="ADD_MEDIA_QUESTION">Which media you want to add?</string>
 </resources>
