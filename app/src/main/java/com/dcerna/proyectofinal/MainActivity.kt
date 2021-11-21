@@ -1,8 +1,10 @@
 package com.dcerna.proyectofinal
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
@@ -10,10 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.*
-import com.dcerna.proyectofinal.ui.screens.MultimediaScreen
-import com.dcerna.proyectofinal.ui.screens.NoteDetailsScreen
-import com.dcerna.proyectofinal.ui.screens.NotesScreen
-import com.dcerna.proyectofinal.ui.screens.RecordatoiriosScreen
+import com.dcerna.proyectofinal.ui.screens.*
 import com.dcerna.proyectofinal.ui.theme.ProyectoFinalTheme
 import com.google.accompanist.navigation.animation.AnimatedComposeNavigator
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -21,6 +20,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.P)
     @ExperimentalComposeUiApi
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +34,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.P)
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable
@@ -57,6 +58,7 @@ fun ComposeNotesApp() {
         ) {
             MultimediaScreen(
                 noteID = it.arguments?.getString("noteID")!!,
+                navController
             )
         }
         mycomposable(
@@ -67,12 +69,44 @@ fun ComposeNotesApp() {
                 noteID = it.arguments?.getString("noteID")!!,
             )
         }
+        mycomposable(
+            "detallesFoto/{multimediaID}",
+            arguments = listOf(navArgument("multimediaID") { type = NavType.StringType }),
+        ) {
+            DetailsPictureScreen(
+                multimediaID = it.arguments?.getString("multimediaID")!!,
+            )
+        }
+        mycomposable(
+            "detallesVideo/{multimediaID}",
+            arguments = listOf(navArgument("multimediaID") { type = NavType.StringType }),
+        ) {
+            DetailsVideoScreen(
+                multimediaID = it.arguments?.getString("multimediaID")!!,
+            )
+        }
+        mycomposable(
+            "detallesAudio/{multimediaID}",
+            arguments = listOf(navArgument("multimediaID") { type = NavType.StringType }),
+        ) {
+            DetailsAudioScreen(
+                multimediaID = it.arguments?.getString("multimediaID")!!,
+            )
+        }
+        mycomposable(
+            "detallesArchivo/{multimediaID}",
+            arguments = listOf(navArgument("multimediaID") { type = NavType.StringType }),
+        ) {
+            DetailsFileScreen(
+                multimediaID = it.arguments?.getString("multimediaID")!!,
+            )
+        }
     }
 }
 
 
 @ExperimentalAnimationApi
-public fun NavGraphBuilder.mycomposable(
+fun NavGraphBuilder.mycomposable(
     route: String,
     arguments: List<NamedNavArgument> = emptyList(),
     content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
