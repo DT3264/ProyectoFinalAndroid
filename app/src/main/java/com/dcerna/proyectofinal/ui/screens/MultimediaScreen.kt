@@ -74,9 +74,9 @@ fun MuestraDialogAgregarMultimedia(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        dialogState.value = false
                         val idNuevaMultimedia =
                             insertaMultimedia(context, noteID, "", "jpg", nombreArchivo.value)
+                        dialogState.value = false
                         nombreArchivo.value = ""
                         navController.navigate(route = "detallesFoto/${idNuevaMultimedia}")
                     }
@@ -87,10 +87,11 @@ fun MuestraDialogAgregarMultimedia(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        val idNuevaNota = insertaNota(context, esTarea = true)
+                        val idNuevaMultimedia =
+                            insertaMultimedia(context, noteID, "", "mp4", nombreArchivo.value)
                         dialogState.value = false
                         nombreArchivo.value = ""
-                        navController.navigate(route = "detallesVideo/$idNuevaNota")
+                        navController.navigate(route = "detallesVideo/$idNuevaMultimedia")
                     }
                 ) {
                     Text(stringResource(R.string.VIDEO))
@@ -99,23 +100,14 @@ fun MuestraDialogAgregarMultimedia(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        val idNuevaNota = insertaNota(context, esTarea = true)
+                        val idNuevaMultimedia =
+                            insertaMultimedia(context, noteID, "", "mp3", nombreArchivo.value)
                         dialogState.value = false
-                        navController.navigate(route = "detallesAudio/$idNuevaNota")
+                        nombreArchivo.value = ""
+                        navController.navigate(route = "detallesAudio/$idNuevaMultimedia")
                     }
                 ) {
                     Text(stringResource(R.string.AUDIO))
-                }
-                Spacer(modifier = Modifier.size(16.dp))
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        val idNuevaNota = insertaNota(context, esTarea = true)
-                        dialogState.value = false
-                        navController.navigate(route = "detallesArchivo/$idNuevaNota")
-                    }
-                ) {
-                    Text(stringResource(R.string.FILE))
                 }
             }
         }
@@ -171,7 +163,6 @@ fun GetMultimedia(
             if (multimedia.tipo == "jpg") Text(stringResource(R.string.PICTURE))
             if (multimedia.tipo == "mp4") Text(stringResource(R.string.VIDEO))
             if (multimedia.tipo == "mp3") Text(stringResource(R.string.AUDIO))
-            if (multimedia.tipo == "etc") Text(stringResource(R.string.FILE))
             if (multimedia.descripcion.isNotBlank())
                 Text(
                     multimedia.descripcion,

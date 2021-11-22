@@ -27,7 +27,6 @@
     <string name="PICTURE">Picture</string>
     <string name="VIDEO">Video</string>
     <string name="AUDIO">Audio</string>
-    <string name="FILE">File</string>
     <string name="ADD_MEDIA">Add media</string>
     <string name="ADD_MEDIA_QUESTION">Which media you want to add?</string>
 </resources>
