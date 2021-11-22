@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
-import java.io.File
 import android.content.ContentResolver
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -27,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.dcerna.proyectofinal.R
 import com.dcerna.proyectofinal.data.Multimedia
 import com.dcerna.proyectofinal.data.NotasBD
+import java.io.*
 
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -67,7 +67,18 @@ fun DetailsPicture(multimedia: Multimedia, db: NotasBD) {
         mutableStateOf(initialBitmap)
     }
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+    val launcherExplorador = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) {
+        // Se guardó el contenido de la imagen en la uri especificada
+        if(it != null) {
+            val contentResolver: ContentResolver = context.contentResolver
+            copiaImagen(it, archivo.absolutePath, contentResolver)
+            val source: ImageDecoder.Source = ImageDecoder.createSource(contentResolver, it)
+            val bitmap = ImageDecoder.decodeBitmap(source)
+            imageBitmap.value = bitmap.asImageBitmap()
+        }
+    }
+
+    val launcherFoto = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
         if(it){
             // Se guardó el contenido de la imagen en la uri especificada
             val contentResolver: ContentResolver = context.contentResolver
@@ -77,16 +88,36 @@ fun DetailsPicture(multimedia: Multimedia, db: NotasBD) {
         }
     }
 
+
     Column() {
-        Image(imageBitmap.value, null, modifier = Modifier.fillMaxWidth().padding(20.dp))
-        MuestraParteInferior(multimedia, launcher, uriFoto, db)
+        Image(imageBitmap.value, null, modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp))
+        MuestraParteInferior(multimedia, launcherFoto, launcherExplorador, uriFoto, archivo.exists(), db)
     }
 }
+fun copiaImagen(uri: Uri, archivo: String, contentResolver: ContentResolver) {
+    val inputStream: InputStream? =
+        contentResolver.openInputStream(uri)
+    val outputStream: OutputStream = FileOutputStream(archivo)
+    val buf = ByteArray(1024)
+    var len: Int
+    if (inputStream != null) {
+        while (inputStream.read(buf).also { len = it } > 0) {
+            outputStream.write(buf, 0, len)
+        }
+    }
+    outputStream.close()
+    inputStream?.close()
+}
+
 @Composable
 fun MuestraParteInferior(
     multimedia: Multimedia,
     launcher: ManagedActivityResultLauncher<Uri, Boolean>,
+    launcherExplorador: ManagedActivityResultLauncher<Array<String>, Uri?>,
     uriFoto: Uri,
+    existeArchivo: Boolean,
     db: NotasBD
 ) {
     val descripcion = remember {
@@ -96,16 +127,26 @@ fun MuestraParteInferior(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()){
         TextField(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
             value = descripcion.value,
             onValueChange = {
                 descripcion.value = it
             }
         )
-        Button(
-            modifier = Modifier.padding(top = 20.dp),
-            onClick = { launcher.launch(uriFoto) }) {
-            Text(text = stringResource(R.string.TAKE_PICTURE))
+        if(!existeArchivo) {
+            Button(
+                modifier = Modifier.padding(top = 20.dp),
+                onClick = { launcher.launch(uriFoto) }) {
+                Text(text = stringResource(R.string.TAKE_PICTURE))
+            }
+
+            Button(
+                modifier = Modifier.padding(top = 20.dp),
+                onClick = { launcherExplorador.launch(arrayOf("image/*")) }) {
+                Text(text = "Seleccionar foto")
+            }
         }
     }
     multimedia.descripcion = descripcion.value

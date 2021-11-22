@@ -93,14 +93,6 @@ fun ComposeNotesApp() {
                 multimediaID = it.arguments?.getString("multimediaID")!!,
             )
         }
-        mycomposable(
-            "detallesArchivo/{multimediaID}",
-            arguments = listOf(navArgument("multimediaID") { type = NavType.StringType }),
-        ) {
-            DetailsFileScreen(
-                multimediaID = it.arguments?.getString("multimediaID")!!,
-            )
-        }
     }
 }
 
