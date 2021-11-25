@@ -64,4 +64,12 @@ interface DAONotas {
 
     @Query("SELECT * FROM multimedias WHERE idMultimedia = :id")
     fun getMultimediaPorIDMultimedia(id: String): Multimedia
+
+    @Query("SELECT * FROM recordatorios WHERE idRecordatorio = :id")
+    fun getRecordatorioPorID(id: String): Recordatorio
+
+    @Query("SELECT * FROM recordatorios")
+    fun getRecordatorios(): List<Recordatorio>
+
+
 }

@@ -3,6 +3,7 @@
     package="com.dcerna.proyectofinal">
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"></uses-permission>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <application
         android:allowBackup="true"
@@ -33,6 +34,18 @@
 
 
         </provider>
+        <receiver android:name=".MiReceiverAlarma"
+            android:exported="true">
+
+    </receiver>
+
+
+    <receiver android:name=".BootReceiver"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+        </intent-filter>
+    </receiver>
     </application>
 
 </manifest>
