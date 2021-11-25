@@ -6,17 +6,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
-import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.*
 import com.dcerna.proyectofinal.ui.screens.*
 import com.dcerna.proyectofinal.ui.theme.ProyectoFinalTheme
 import com.google.accompanist.navigation.animation.AnimatedComposeNavigator
 import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
 class MainActivity : ComponentActivity() {
@@ -25,10 +22,11 @@ class MainActivity : ComponentActivity() {
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val idNota = intent.getLongExtra("idNota", -1)
         setContent {
             ProyectoFinalTheme {
                 // A surface container using the 'background' color from the theme
-                ComposeNotesApp()
+                ComposeNotesApp(idNota)
             }
         }
     }
@@ -38,7 +36,7 @@ class MainActivity : ComponentActivity() {
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable
-fun ComposeNotesApp() {
+fun ComposeNotesApp(idNota: Long) {
     val navController = rememberAnimatedNavController()
     AnimatedNavHost(navController, startDestination = "lista") {
         mycomposable("lista",
@@ -64,7 +62,7 @@ fun ComposeNotesApp() {
         mycomposable(
             "recordatorios/{noteID}",
             arguments = listOf(navArgument("noteID") { type = NavType.StringType }),
-            ) {
+        ) {
             RecordatoiriosScreen(
                 noteID = it.arguments?.getString("noteID")!!,
             )
@@ -94,6 +92,8 @@ fun ComposeNotesApp() {
             )
         }
     }
+    if(idNota != -1L)
+        navController.navigate(route = "noteDetails/$idNota")
 }
 
 
