@@ -1,8 +1,12 @@
 package com.dcerna.proyectofinal.ui.screens
 
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Context.ALARM_SERVICE
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -23,6 +27,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.dcerna.proyectofinal.MiReceiverAlarma
 import com.dcerna.proyectofinal.R
 import com.dcerna.proyectofinal.data.NotasBD
 import com.dcerna.proyectofinal.util.Fecha
@@ -278,6 +283,17 @@ fun getTimePickerDialogAdd(
             val nota = db.DAONotas().getNota(noteID)
             nota.fechaLimite = fechaYHoraSeleccionada.timeInMillis;
             db.DAONotas().update(nota)
+            var alarmMgr = context.getSystemService(ALARM_SERVICE) as AlarmManager
+            var alarmIntent = Intent(context, MiReceiverAlarma::class.java).let { intent ->
+                intent.putExtra("idNota", nota.idNota)
+                intent.putExtra("esFechaLimite", true)
+                PendingIntent.getBroadcast(context, (nota.idNota*1000).toInt(), intent, 0)
+            }
+            alarmMgr.set(
+                AlarmManager.RTC,
+                fechaYHoraSeleccionada.timeInMillis,
+                alarmIntent
+            )
 
         },
         horaActual, minutoActual, false
