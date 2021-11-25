@@ -1,8 +1,12 @@
 package com.dcerna.proyectofinal.ui.screens
 
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Context.ALARM_SERVICE
+import android.content.Intent
 import android.text.format.DateFormat.format
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dcerna.proyectofinal.MiReceiverAlarma
 import com.dcerna.proyectofinal.R
 import com.dcerna.proyectofinal.data.NotasBD
 import com.dcerna.proyectofinal.data.Recordatorio
@@ -48,7 +53,7 @@ fun RecordatoiriosScreen(noteID: String){
     val datePickerDialog = getDatePickerDialogRecordatorio(context, noteID )
 
     if (dialogEliminar.value) {
-       muestraDialogEliminarRecordatorio(dialogEliminar, context, recordatorioEliminar)
+        muestraDialogEliminarRecordatorio(dialogEliminar, context, recordatorioEliminar)
     }
 
     Scaffold(
@@ -76,8 +81,6 @@ fun RecordatoiriosScreen(noteID: String){
 
         }
         Column{
-            Text(text = "${stringResource(R.string.ID_NOTE)}: $noteID")
-            Text(stringResource(R.string.REMINDERS))
             Column(modifier = Modifier.fillMaxHeight()) {
                 recordatorios.value?.forEach { r -> mostrarRecordatorio(r, dialogEliminar, recordatorioEliminar) }
             }
@@ -155,9 +158,21 @@ fun getTimePickerDialogRecordatorio(
             )
             // Aquí se hace lo que se requiera con la fecha/hora
             val db = NotasBD.getInstance(context)
-            val recordatorio= Recordatorio(idNota=noteID.toLong(), fechaRecordatorio=fechaYHoraSeleccionada.timeInMillis.toLong())
+            var recordatorio= Recordatorio(idNota=noteID.toLong(), fechaRecordatorio=fechaYHoraSeleccionada.timeInMillis)
             db.DAONotas().save(recordatorio)
-            
+            val recordatorios = db.DAONotas().getRecordatoriosPorIDNota(noteID)
+            recordatorio = recordatorios.last()
+            var alarmMgr = context.getSystemService(ALARM_SERVICE) as AlarmManager
+            var alarmIntent = Intent(context, MiReceiverAlarma::class.java).let { intent ->
+                intent.putExtra("idRecordatorio", recordatorio.idRecordatorio)
+                intent.putExtra("idNota", recordatorio.idNota)
+                PendingIntent.getBroadcast(context, recordatorio.idRecordatorio.toInt(), intent, 0)
+            }
+            alarmMgr.set(
+                AlarmManager.RTC,
+                fechaYHoraSeleccionada.timeInMillis,
+                alarmIntent
+            )
 
         },
         horaActual, minutoActual, false
