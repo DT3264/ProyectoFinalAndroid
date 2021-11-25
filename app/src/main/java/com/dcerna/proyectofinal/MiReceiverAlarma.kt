@@ -67,6 +67,7 @@ class MiReceiverAlarma : BroadcastReceiver() {
             .setContentText(nota.nota)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(intent)
+            .setAutoCancel(true)
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.notify(idRecordatorio.toInt(), builder.build())
     }
