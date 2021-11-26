@@ -2,9 +2,12 @@ package com.dcerna.proyectofinal.ui.screens
 
 import android.content.Context
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -92,7 +95,7 @@ fun NotesScreen(navController: NavController) {
 
         Column {
             SearchView(query)
-            Column() {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState(0))) {
                 notas?.forEach { n -> GetNota(n, navController, context) }
             }
         }
@@ -190,7 +193,7 @@ fun MuestraDialogAgregar(dialogState: MutableState<Boolean>, navController: NavC
                         navController.navigate(route = "noteDetails/$idNuevaNota")
                     }
                 ) {
-                    Text(stringResource(R.string.REMINDER))
+                    Text(stringResource(R.string.TASK))
                 }
             }
         }
