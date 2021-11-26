@@ -23,6 +23,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val idNota = intent.getLongExtra("idNota", -1)
+        intent.replaceExtras(Bundle())
         setContent {
             ProyectoFinalTheme {
                 // A surface container using the 'background' color from the theme
@@ -92,8 +93,9 @@ fun ComposeNotesApp(idNota: Long) {
             )
         }
     }
-    if(idNota != -1L)
+    if(idNota != -1L) {
         navController.navigate(route = "noteDetails/$idNota")
+    }
 }
 
 
